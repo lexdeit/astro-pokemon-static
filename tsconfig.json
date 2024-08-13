@@ -6,6 +6,8 @@
       "@components/*": [
         "./src/components/*"
       ]
-    }
+    },
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js"
   }
 }

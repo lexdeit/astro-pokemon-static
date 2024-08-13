@@ -1,6 +1,7 @@
 ---
 import { ViewTransitions } from "astro:transitions";
 import { siteInfo } from "../consts/site.info";
+import NavBar from "@components/shared/nav-bar.astro";
 interface Props {
     title?: string;
     image?: string;
@@ -43,8 +44,9 @@ const {
             }
         </style> -->
     </head>
-    <body class="bg-neutral-800 text-neutral-200 m-auto max-w-3xl">
-        <main class="mt-10">
+    <body class="bg-neutral-800 text-neutral-200">
+        <NavBar />
+        <main class="mt-10  m-auto max-w-3xl">
             <slot />
         </main>
     </body>

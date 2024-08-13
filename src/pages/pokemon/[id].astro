@@ -3,6 +3,8 @@ import type { GetStaticPaths } from "astro";
 import type { PokemonListResponse } from "../../interfaces/pokemon-list-response";
 import MainLayout from "../../layouts/main-layout.astro";
 import PokemonCard from "@components/pokemons/pokemon-card.astro";
+import Title from "@components/shared/title.astro";
+import FavoriteButton from "../../components/buttons/favorite-button/index.astro";
 
 export const getStaticPaths = (async () => {
     const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=151`);
@@ -35,14 +37,125 @@ const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprit
 >
     <section class="flex flex-col justify-center items-center mt-10 mx-10">
         <div class="w-full">
-            <a href="/" class="">Regresar</a>
-            <div class="w-full flex justify-center items-center">
-                <h1 class="text-5xl capitalize font-bold">{name}</h1>
+            <button onclick="history.back()" class="text-white">Regresar</button
+            >
+            <div class="flex gap-4">
+                <div class="w-full flex justify-center items-center">
+                    <Title>{name}</Title>
+                </div>
+                <div>
+                    <button
+                        id="btn-favorite"
+                        class="ml-4"
+                        data-name={name}
+                        data-id={id}
+                    >
+                        <svg
+                            data-outline
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-heart"
+                            ><path stroke="none" d="M0 0h24v24H0z" fill="none"
+                            ></path><path
+                                d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"
+                            ></path></svg
+                        >
+
+                        <svg
+                            data-fill
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            class="icon icon-tabler icons-tabler-filled icon-tabler-heart hidden"
+                            ><path stroke="none" d="M0 0h24v24H0z" fill="none"
+                            ></path><path
+                                d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z"
+                            ></path></svg
+                        >
+                    </button>
+                </div>
             </div>
         </div>
+
         <PokemonCard name={name} url={url} isBig />
         <audio controls class="mt-5">
             <source src={audioSrc} />
         </audio>
     </section>
 </MainLayout>
+
+<script>
+    interface FavoritePokemon {
+        name: string;
+        id: number;
+    }
+
+    const handlePageLoad = () => {
+        let favoritePokemons: FavoritePokemon[] = JSON.parse(
+            localStorage.getItem("favorites") ?? "[]",
+        );
+
+        const btnFavorite = document.querySelector(
+            "#btn-favorite",
+        ) as HTMLButtonElement;
+
+        if (!btnFavorite) return;
+
+        const name = btnFavorite.dataset.name ?? "";
+        const id = btnFavorite.dataset.id ?? "";
+        const isFavorite = favoritePokemons.some((fav) => fav.name === name);
+
+        const heartOutline = btnFavorite.querySelector(
+            "[data-outline]",
+        ) as HTMLElement;
+
+        const heartFull = btnFavorite.querySelector(
+            "[data-fill]",
+        ) as HTMLElement;
+
+        // Hagan la función para mostrar o ocultar el corazón lleno
+        if (isFavorite) {
+            heartOutline.classList.add("hidden");
+            heartFull.classList.remove("hidden");
+        }
+
+        const toggleFavorite = () => {
+            const isFavorite = favoritePokemons.some(
+                (fav) => fav.name === name,
+            );
+
+            if (isFavorite) {
+                // Remover
+                favoritePokemons = favoritePokemons.filter(
+                    (fav) => fav.name !== name,
+                );
+            } else {
+                // Agregar
+                favoritePokemons.push({
+                    id: +id,
+                    name: name,
+                });
+            }
+
+            localStorage.setItem("favorites", JSON.stringify(favoritePokemons));
+        };
+
+        btnFavorite.addEventListener("click", () => {
+            heartOutline.classList.toggle("hidden");
+            heartFull.classList.toggle("hidden");
+
+            toggleFavorite();
+        });
+    };
+
+    document.addEventListener("astro:page-load", handlePageLoad);
+</script>

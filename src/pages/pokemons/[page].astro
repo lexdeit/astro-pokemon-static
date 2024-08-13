@@ -3,6 +3,7 @@ import type { GetStaticPaths } from "astro";
 import MainLayout from "../../layouts/main-layout.astro";
 import type { PokemonListResponse } from "../../interfaces/pokemon-list-response";
 import PokemonCard from "../../components/pokemons/pokemon-card.astro";
+import Title from "@components/shared/title.astro";
 
 const title = "Home - Pokemon";
 
@@ -17,9 +18,7 @@ const { page } = Astro.props;
 ---
 
 <MainLayout title={title}>
-	<div class="flex justify-center items-center">
-		<h1 class="text-6xl font-semibold mb-5">Listado de Pokemones</h1>
-	</div>
+	<Title> Paginado de Pokemones </Title>
 
 	<section
 		aria-label="Listado de Pokemons"
