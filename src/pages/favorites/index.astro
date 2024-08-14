@@ -1,4 +1,5 @@
 ---
+import { FavoritePokemons } from "@components/pokemons/favorite-pokemons";
 import Title from "@components/shared/title.astro";
 import MainLayout from "src/layouts/main-layout.astro";
 
@@ -7,4 +8,5 @@ const title = `Favorites`;
 
 <MainLayout title={title}>
     <Title> Pokemones Favoritos </Title>
+    <FavoritePokemons client:only="solid-js" />
 </MainLayout>
